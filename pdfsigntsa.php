@@ -44,7 +44,7 @@ else {
             // Silently prompt for the timestamp autority
             fwrite(STDERR, "TSA(\"http://timestamp.digicert.com\"): ");
             system('stty -echo');
-            $tsa = trim(fgets(STDIN));
+            $tsa = trim(fgets(STDIN)) ?: "http://timestamp.digicert.com";
             system('stty echo');
             fwrite(STDERR, "\n");
         }   
@@ -58,10 +58,7 @@ else {
             if (!$obj->set_signature_certificate($argv[2], $password))
                 fwrite(STDERR, "the certificate is not valid");
             else {
-                if (!empty($tsa)) {
-                    $obj->set_tsa($tsa);
-                }
-                $obj->set_ltv();
+                $obj->set_tsa($tsa);
                 $docsigned = $obj->to_pdf_file_s();
                 if ($docsigned === false)
                     fwrite(STDERR, "could not sign the document");
